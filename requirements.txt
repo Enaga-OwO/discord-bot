@@ -4,3 +4,7 @@ aiohttp
 psutil
 python-dotenv
 requests
+PyNaCl
+Pillow
+numpy
+opencv-python
