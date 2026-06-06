@@ -1,24 +1,22 @@
+# 1. ベースとしてPython 3.11の軽量公式イメージを使用
 FROM python:3.11-slim
 
+# 2. システムの更新と ffmpeg、その他必要なツールのインストール
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     curl \
     ca-certificates \
-    fontconfig \
-    libgl1-mesa-glx \
-    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
+# 3. コンテナ内の作業ディレクトリを /app に設定
 WORKDIR /app
 
-# 先に全部のファイルをコピーしちゃう（requirements.txtも最新になる）
-COPY . .
-
-# その最新のファイルを使ってライブラリをインストール
+# 4. requirements.txt をコピーしてライブラリをインストール
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN mkdir -p /usr/share/fonts/truetype/custom && \
-    if [ -d "fonts" ]; then cp fonts/* /usr/share/fonts/truetype/custom/ 2>/dev/null || true; fi && \
-    fc-cache -fv
+# 5. 残りのプログラム（bot.pyなど）をすべてコンテナにコピー
+COPY . .
 
+# 6. Botを実行するコマンド
 CMD ["python", "bot.py"]
